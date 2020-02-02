@@ -8,17 +8,6 @@ export default function Items(props) {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [deleteIsConfirmed, setDeleteIsConfirmed] = React.useState(false);
-
-  async function showModal() {
-    setModalIsOpen(true);
-  };
-
-  async function hideModal (deleteConfirmed){
-    setDeleteIsConfirmed(deleteConfirmed)
-    setModalIsOpen(false);
-  };
 
   useEffect(() => {
     async function onLoad() {
@@ -52,12 +41,6 @@ export default function Items(props) {
   
   async function handleDelete(event, id) {
     event.preventDefault()
-  
-    showModal()
-  
-    if (!deleteIsConfirmed) {
-      return;
-    }
 
     setIsDeleting(true);
 
@@ -111,20 +94,6 @@ export default function Items(props) {
           {!isLoading && renderNotesList(items)}
         </tbody>
         </Table>
-        <Modal show={modalIsOpen}>
-            <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-            <Modal.Footer>
-            <Button variant="secondary" onClick={() => hideModal(false)}>
-                Close
-            </Button>
-            <Button variant="primary" onClick={() => hideModal(true)}>
-                Save Changes
-            </Button>
-            </Modal.Footer>
-        </Modal>
         
     </div>
   );

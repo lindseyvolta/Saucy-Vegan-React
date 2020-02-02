@@ -13,7 +13,7 @@ export default function NewItem(props) {
 
   function validateForm() {
     return name.length > 0 &&
-           category != "Select...";
+           category != "";
   }
 
   async function handleSubmit(event) {

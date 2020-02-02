@@ -50,7 +50,7 @@ function App(props) {
             <LinkContainer to="/planner">
               <Nav.Link>Planner</Nav.Link>
             </LinkContainer>
-              <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+              <NavDropdown title="My Kitchen" id="basic-nav-dropdown">
                 <LinkContainer to="/meals">
                   <NavDropdown.Item>Meals</NavDropdown.Item>
                 </LinkContainer>
