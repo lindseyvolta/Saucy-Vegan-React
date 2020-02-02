@@ -1,19 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import Routes from "./Routes";
-import { Navbar, NavDropdown, Nav } from "react-bootstrap";
+import { Navbar, NavDropdown, Nav, NavItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import './App.css';
+import { Auth } from "aws-amplify";
+import { Link, withRouter } from "react-router-dom";
 
 function App(props) {
+  const [isAuthenticated, userHasAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
+
+  useEffect(() => {
+    onLoad();
+  }, []);
+  
+  async function onLoad() {
+    try {
+      await Auth.currentSession();
+      userHasAuthenticated(true);
+    }
+    catch(e) {
+      if (e !== 'No current user') {
+        alert(e);
+      }
+    }
+  
+    setIsAuthenticating(false);
+  }
+
+  async function handleLogout() {
+    await Auth.signOut();
+  
+    userHasAuthenticated(false);
+    props.history.push("/login");
+  }
+
   return (
+    !isAuthenticating &&
     <div>
+      <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossOrigin="anonymous"></link>
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home">Saucy Vegan</Navbar.Brand>
+        <LinkContainer to="/">
+          <Navbar.Brand>Saucy Vegan</Navbar.Brand>
+        </LinkContainer>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#link">Link</Nav.Link>
+          <LinkContainer to="/kitchen">
+            <Nav.Link>My Kitchen</Nav.Link>
+          </LinkContainer>
             <NavDropdown title="Dropdown" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
@@ -23,19 +58,24 @@ function App(props) {
             </NavDropdown>
           </Nav>
           <Nav pullRight>
+          {isAuthenticated
+            ? <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+            : <>
                 <LinkContainer to="/signup">
-                  <Nav.Link>Signup</Nav.Link>
+                  <Nav.Link>Sign Up</Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/login">
                   <Nav.Link>Login</Nav.Link>
                 </LinkContainer>
+              </>
+          }
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <Routes />
+      <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
     </div>
     
   );
 }
 
-export default App;
+export default withRouter(App);

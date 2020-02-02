@@ -1,22 +1,27 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
 import { Auth } from "aws-amplify";
+import { Button, FormGroup, FormControl, Form } from "react-bootstrap";
+import { useFormFields } from "../libs/hooksLib";
 import "./Login.css";
 
 export default function Login(props) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  
+  const [fields, handleFieldChange] = useFormFields({
+    username: "",
+    password: ""
+  });
 
   function validateForm() {
-    return username.length > 0 && password.length > 0;
+    return fields.username.length > 0 && fields.password.length > 0;
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-  
+
     try {
-      await Auth.signIn(username, password);
-      alert("Logged in");
+      await Auth.signIn(fields.username, fields.password);
+      props.userHasAuthenticated(true);
+      props.history.push("/");
     } catch (e) {
       alert(e.message);
     }
@@ -24,28 +29,28 @@ export default function Login(props) {
 
   return (
     <div className="Login">
-      <Form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Form.Group controlId="username" bsSize="large">
+          <Form.Label>Username</Form.Label>
           <Form.Control
             autoFocus
             type="username"
-            value={username}
-            onChange={e => setUsername(e.target.value)} 
-            placeholder="Username"
+            value={fields.username}
+            onChange={handleFieldChange}
           />
         </Form.Group>
         <Form.Group controlId="password" bsSize="large">
+          <Form.Label>Password</Form.Label>
           <Form.Control
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            type="password" 
-            placeholder="Password"
+            type="password"
+            value={fields.password}
+            onChange={handleFieldChange}
           />
         </Form.Group>
-        <Button block bsSize="large" disabled={!validateForm()} type="submit">
+        <Button block bssize="large" disabled={!validateForm()} type="submit">
           Login
         </Button>
-      </Form>
+      </form>
     </div>
   );
 }
